@@ -1,7 +1,7 @@
 {
   "name": "rrwebdebug.com",
-  "version": "1.1.0",
-  "repository": "https://github.com/rrweb-io/rrwebdebug.com.git",
+  "version": "1.1.1",
+  "repository": "https://github.com/PostHog/rrwebdebug.com",
   "author": "Justin Halsall <Juice10@users.noreply.github.com>",
   "license": "MIT",
   "scripts": {
