@@ -26,7 +26,7 @@ function scriptSRC(version, type = "cjs") {
       // return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/rrweb-player.umd.cjs`; // <= https://github.com/jsdelivr/jsdelivr/issues/18584
       return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb-player.umd.cjs`;
     case "posthog":
-      return `https://unpkg.dev/@posthog/rrweb@${version}/dist/rrweb-player.umd.cjs`;
+      return `https://unpkg.dev/@posthog/rrweb-player@${version}/dist/rrweb-player.umd.cjs`;
     default:
       console.error("Unknown type: " + type);
   }
