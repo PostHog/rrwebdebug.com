@@ -9,7 +9,7 @@ function allowedVersion(version) {
 
 function defaultVersion() {
   const defaultVersion = Object.entries(versionsJson).find(
-    ([version, { default: isDefault }]) => {
+    ([_version, { default: isDefault }]) => {
       if (isDefault) return true;
     },
   );
@@ -17,20 +17,19 @@ function defaultVersion() {
 }
 
 function scriptSRC(version, type = "cjs") {
-  if (type === "legacy") {
-    return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/index.js`;
+  switch (type) {
+    case "legacy":
+      return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/index.js`;
+    case "js":
+      return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb.js`;
+    case "cjs":
+      // return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/rrweb-player.umd.cjs`; // <= https://github.com/jsdelivr/jsdelivr/issues/18584
+      return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb-player.umd.cjs`;
+    case "posthog":
+      return `https://unpkg.dev/@posthog/rrweb@${version}/dist/rrweb-player.umd.cjs`;
+    default:
+      console.error("Unknown type: " + type);
   }
-  if (type === "js") {
-    return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb.js`;
-  }
-  if (type === "cjs") {
-    // return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/rrweb-player.umd.cjs`; // <= https://github.com/jsdelivr/jsdelivr/issues/18584
-    return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb-player.umd.cjs`;
-  }
-  if (type === "posthog") {
-    return `https://unpkg.dev/@posthog/rrweb@${version}/dist/rrweb.umd.cjs`;
-  }
-  console.error("Unknown type: " + type);
 }
 
 function styleHref(version) {
