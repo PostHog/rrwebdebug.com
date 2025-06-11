@@ -1,7 +1,6 @@
 import { populateVersions } from "./populate-versions";
 import "./style.css";
 
-
 // Handle input method switching
 function showInputSection() {
   // Hide all input sections
@@ -25,15 +24,15 @@ function showInputSection() {
 // Helper functions for IndexedDB
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('rrweb-storage', 1);
+    const request = indexedDB.open("rrweb-storage", 1);
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains('events')) {
-        db.createObjectStore('events');
+      if (!db.objectStoreNames.contains("events")) {
+        db.createObjectStore("events");
       }
     };
   });
@@ -43,10 +42,10 @@ function storeEventsInIndexedDB(events: any): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
       const db = await openDB();
-      const transaction = db.transaction(['events'], 'readwrite');
-      const store = transaction.objectStore('events');
+      const transaction = db.transaction(["events"], "readwrite");
+      const store = transaction.objectStore("events");
 
-      store.put(events, 'rrweb-events');
+      store.put(events, "rrweb-events");
 
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);
@@ -132,11 +131,9 @@ async function handleFormSubmission(e: Event) {
 
 function setupEventListeners() {
   // Set up event listeners for radio button changes
-  document
-    .querySelectorAll('input[name="inputMethod"]')
-    .forEach((radio) => {
-      radio.addEventListener("change", showInputSection);
-    });
+  document.querySelectorAll('input[name="inputMethod"]').forEach((radio) => {
+    radio.addEventListener("change", showInputSection);
+  });
 
   // Handle form submission
   const eventsForm = document.getElementById("eventsForm");

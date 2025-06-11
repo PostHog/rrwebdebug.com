@@ -113,15 +113,15 @@ function getJSONBlobId(url) {
 // Add IndexedDB helper functions at the top
 function openDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('rrweb-storage', 1);
+    const request = indexedDB.open("rrweb-storage", 1);
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains('events')) {
-        db.createObjectStore('events');
+      if (!db.objectStoreNames.contains("events")) {
+        db.createObjectStore("events");
       }
     };
   });
@@ -131,9 +131,9 @@ function getEventsFromIndexedDB() {
   return new Promise(async (resolve, reject) => {
     try {
       const db = await openDB();
-      const transaction = db.transaction(['events'], 'readonly');
-      const store = transaction.objectStore('events');
-      const request = store.get('rrweb-events');
+      const transaction = db.transaction(["events"], "readonly");
+      const store = transaction.objectStore("events");
+      const request = store.get("rrweb-events");
 
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
@@ -176,7 +176,11 @@ async function startPlayer() {
         }
 
         events = JSON.parse(storedEvents);
-        console.log("Loaded events from sessionStorage:", events.length, "events");
+        console.log(
+          "Loaded events from sessionStorage:",
+          events.length,
+          "events",
+        );
       }
 
       // Update the JSON source display to show it's local data
