@@ -7,10 +7,6 @@ function allowedVersion(version) {
   return allVersions.includes(version);
 }
 
-function isLegacy(version) {
-  return Boolean(versionsJson[version].legacy);
-}
-
 function defaultVersion() {
   const defaultVersion = Object.entries(versionsJson).find(
     ([version, { default: isDefault }]) => {
@@ -30,6 +26,9 @@ function scriptSRC(version, type = "cjs") {
   if (type === "cjs") {
     // return `https://cdn.jsdelivr.net/npm/rrweb-player@${version}/dist/rrweb-player.umd.cjs`; // <= https://github.com/jsdelivr/jsdelivr/issues/18584
     return `https://unpkg.dev/rrweb-player@${version}/dist/rrweb-player.umd.cjs`;
+  }
+  if (type === "posthog") {
+    return `https://unpkg.dev/@posthog/rrweb@${version}/dist/rrweb.umd.cjs`;
   }
   console.error("Unknown type: " + type);
 }
