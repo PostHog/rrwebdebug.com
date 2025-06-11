@@ -149,5 +149,20 @@
     "type": "cjs",
     "default": true,
     "group": "rrweb-2.0"
+  },
+  "0.0.13": {
+    "rrwebVersion": "0.0.13",
+    "type": "posthog",
+    "group": "posthog"
+  },
+  "0.0.14": {
+    "rrwebVersion": "0.0.14",
+    "type": "posthog",
+    "group": "posthog"
+  },
+  "0.0.17": {
+    "rrwebVersion": "0.0.17",
+    "type": "posthog",
+    "group": "posthog"
   }
 }

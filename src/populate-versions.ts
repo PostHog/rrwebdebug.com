@@ -13,8 +13,9 @@ export function populateVersions(selectedVersion?: string) {
         prefix = `<optgroup label="${group}">`;
         suffix = `</optgroup>`;
       }
-      return `${prefix}<option value="${version}" ${isDefault ? "selected" : ""
-        }>${version} (rrweb v${rrwebVersion})</option>${suffix}`;
+      return `${prefix}<option value="${version}" ${
+        isDefault ? "selected" : ""
+      }>${version} (rrweb v${rrwebVersion})</option>${suffix}`;
     })
     .join("");
 
