@@ -37,8 +37,12 @@ function styleHref(version) {
 }
 
 function setupVersionSelector(version) {
+  console.log("setupVersionSelector", version);
   populateVersions(version);
-  document.getElementById("versions").addEventListener("change", (e) => {
+  const versions = document.getElementById("versions");
+  console.log("versions", versions);
+  versions.addEventListener("change", (e) => {
+    console.log("change", e.target.value);
     const newVersion = e.target.value;
     // reload page with selected version, preserving all other parameters
     const location = new URL(document.location);
@@ -106,6 +110,39 @@ function getJSONBlobId(url) {
   return match?.[1] || false;
 }
 
+// Add IndexedDB helper functions at the top
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('rrweb-storage', 1);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains('events')) {
+        db.createObjectStore('events');
+      }
+    };
+  });
+}
+
+function getEventsFromIndexedDB() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const db = await openDB();
+      const transaction = db.transaction(['events'], 'readonly');
+      const store = transaction.objectStore('events');
+      const request = store.get('rrweb-events');
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 async function startPlayer() {
   const location = new URL(document.location);
   const url = location.searchParams.get("url");
@@ -122,27 +159,31 @@ async function startPlayer() {
   let events;
 
   if (source === "local") {
-    // Load events from sessionStorage
+    // Load events from IndexedDB first, then fallback to sessionStorage
     try {
-      const storedEvents = sessionStorage.getItem("rrweb-events");
-      console.log("SessionStorage data found:", !!storedEvents);
+      console.log("Trying to load from IndexedDB...");
+      events = await getEventsFromIndexedDB();
 
-      if (!storedEvents) {
-        alert("No events data found. Please go back and select your events.");
-        return;
+      if (events) {
+        console.log("Loaded events from IndexedDB:", events.length, "events");
+      } else {
+        console.log("No IndexedDB data, trying sessionStorage...");
+        const storedEvents = sessionStorage.getItem("rrweb-events");
+
+        if (!storedEvents) {
+          alert("No events data found. Please go back and select your events.");
+          return;
+        }
+
+        events = JSON.parse(storedEvents);
+        console.log("Loaded events from sessionStorage:", events.length, "events");
       }
-      events = JSON.parse(storedEvents);
-      console.log(
-        "Loaded events from sessionStorage:",
-        events.length,
-        "events",
-      );
 
       // Update the JSON source display to show it's local data
       document.getElementById("json-source").innerText =
         "Local data (file upload or paste)";
     } catch (error) {
-      console.error("Error loading from sessionStorage:", error);
+      console.error("Error loading local events data:", error);
       alert("Error loading local events data: " + error.message);
       return;
     }
