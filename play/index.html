@@ -89,7 +89,7 @@
         defaults: "2025-05-24",
       });
     </script>
-    <script type="module" crossorigin src="/rrwebdebug.com/assets/play-Br-Hmnkn.js"></script>
+    <script type="module" crossorigin src="/rrwebdebug.com/assets/play-C0lNXuw0.js"></script>
     <link rel="modulepreload" crossorigin href="/rrwebdebug.com/assets/modulepreload-polyfill-B5Qt9EMX.js">
     <link rel="modulepreload" crossorigin href="/rrwebdebug.com/assets/populate-versions-CE99gwvN.js">
   </head>
@@ -109,13 +109,50 @@
           </div>
           <div class="col-lg-4 text-end">
             <div class="d-flex align-items-center justify-content-end">
+              <!-- Mode Selector -->
+              <div class="btn-group me-2" role="group" aria-label="View modes">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="viewMode"
+                  id="player-mode"
+                  autocomplete="off"
+                  checked
+                />
+                <label
+                  class="btn btn-outline-light btn-sm d-flex align-items-center"
+                  for="player-mode"
+                  title="Normal playback mode"
+                >
+                  <span class="me-1">▶️</span>Player
+                </label>
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="viewMode"
+                  id="debug-mode"
+                  autocomplete="off"
+                />
+                <label
+                  class="btn btn-outline-light btn-sm d-flex align-items-center"
+                  for="debug-mode"
+                  title="Step-by-step debugging mode"
+                >
+                  <span class="me-1">🐛</span>Debug
+                </label>
+              </div>
+
+              <!-- Analysis Button -->
               <button
                 id="analysisBtn"
-                class="btn btn-outline-light btn-sm me-3"
-                title="Open Recording Analysis"
+                class="btn btn-outline-light btn-sm me-3 d-flex align-items-center"
+                title="Open recording analysis in new tab"
               >
-                📊 Analysis
+                <span class="me-1">📊</span>Analysis
+                <span class="ms-1">↗️</span>
               </button>
+
               <label for="versions" class="form-label text-light me-2 mb-0"
                 >Version:</label
               >
@@ -160,6 +197,17 @@
           </div>
         </div>
 
+        <!-- Debug Panel (hidden by default) -->
+        <div class="col-lg-3 debug-col" style="display: none">
+          <div
+            class="card h-100 shadow-sm"
+            id="debug-panel"
+            style="display: none"
+          >
+            <!-- Debug panel content will be populated by JavaScript -->
+          </div>
+        </div>
+
         <!-- JSON Editor Panel -->
         <div class="col-lg-3">
           <div class="card h-100 shadow-sm">
@@ -175,5 +223,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Bootstrap JS for accordion functionality -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
