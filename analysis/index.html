@@ -10,6 +10,9 @@
     integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+    crossorigin="anonymous"></script>
   <style>
     .analysis-section {
       margin-bottom: 2rem;
@@ -87,8 +90,40 @@
       color: #721c24;
       margin: 1rem 0;
     }
+
+    .node-row:hover {
+      background-color: #e9ecef;
+      cursor: pointer;
+    }
+
+    .snapshot-item {
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+      font-size: 0.85rem;
+    }
+
+    .snapshot-timestamp {
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .snapshot-type {
+      color: #007bff;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .snapshot-details {
+      max-height: 200px;
+      overflow-y: auto;
+    }
   </style>
-  <script type="module" crossorigin src="/rrwebdebug.com/assets/analysis-SwU4Jb4G.js"></script>
+  <script type="module" crossorigin src="/rrwebdebug.com/assets/analysis-Bta3CvAc.js"></script>
   <link rel="modulepreload" crossorigin href="/rrwebdebug.com/assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 
@@ -351,6 +386,32 @@
           </summary>
           <div class="code-block" id="rawAnalysisData">Loading...</div>
         </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Node Snapshots Modal -->
+  <div class="modal fade" id="nodeSnapshotsModal" tabindex="-1" aria-labelledby="nodeSnapshotsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="nodeSnapshotsModalLabel">Node Snapshots</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="nodeSnapshotsContent">
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div class="mt-2">Loading snapshots...</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
