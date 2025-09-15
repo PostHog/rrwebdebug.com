@@ -128,7 +128,7 @@
         overflow-y: auto;
       }
     </style>
-    <script type="module" crossorigin src="/rrwebdebug.com/assets/analysis-CE8ct-MA.js"></script>
+    <script type="module" crossorigin src="/rrwebdebug.com/assets/analysis-B4-WsHLq.js"></script>
     <link rel="modulepreload" crossorigin href="/rrwebdebug.com/assets/modulepreload-polyfill-B5Qt9EMX.js">
   </head>
 
@@ -232,9 +232,92 @@
               <div class="table-container" style="height: 300px">
                 <canvas id="mutationsChart"></canvas>
               </div>
+              <!-- Trendline Chart -->
+              <div class="table-container mt-3" style="height: 150px">
+                <canvas id="mutationsTrendline"></canvas>
+              </div>
             </div>
             <div class="col-lg-4">
               <div class="table-container">
+                <h5>Mutation Type Filters</h5>
+                <div id="mutationTypeFilters" class="mb-3">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="MouseMove"
+                      id="filter-mousemove"
+                      checked
+                    />
+                    <label class="form-check-label" for="filter-mousemove">
+                      🖱️ Mouse Movement
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="Mutation"
+                      id="filter-mutation"
+                      checked
+                    />
+                    <label class="form-check-label" for="filter-mutation">
+                      🔧 DOM Mutations
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="MouseInteraction"
+                      id="filter-mouseinteraction"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="filter-mouseinteraction"
+                    >
+                      👆 Mouse Clicks
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="Scroll"
+                      id="filter-scroll"
+                      checked
+                    />
+                    <label class="form-check-label" for="filter-scroll">
+                      📜 Page Scroll
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="Input"
+                      id="filter-input"
+                      checked
+                    />
+                    <label class="form-check-label" for="filter-input">
+                      ⌨️ Text Input
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input mutation-filter"
+                      type="checkbox"
+                      value="ViewportResize"
+                      id="filter-viewportresize"
+                      checked
+                    />
+                    <label class="form-check-label" for="filter-viewportresize">
+                      📐 Viewport Resize
+                    </label>
+                  </div>
+                </div>
+                <hr />
                 <h5>Selected Time Period</h5>
                 <div id="selectedTimeInfo" class="text-muted">
                   Click on a bar to see detailed mutations for that time period
