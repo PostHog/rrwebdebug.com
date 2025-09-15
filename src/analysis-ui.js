@@ -5,7 +5,17 @@ class AnalysisUI {
     this.analyzer = null;
     this.analysisData = null;
     this.mutationsChart = null;
+    this.trendlineChart = null;
     this.showAbsoluteTime = false; // Default to time since start
+    this.activeFilters = new Set([
+      "MouseMove",
+      "Mutation",
+      "MouseInteraction",
+      "Scroll",
+      "Input",
+      "ViewportResize",
+    ]);
+    this.allEventsData = null; // Store all events for filtering
     this.init();
   }
 
@@ -43,15 +53,25 @@ class AnalysisUI {
     if (timeToggleBtn) {
       timeToggleBtn.addEventListener("click", () => this.toggleTimeDisplay());
     }
+
+    // Setup mutation filter listeners
+    const filters = document.querySelectorAll(".mutation-filter");
+    filters.forEach((filter) => {
+      filter.addEventListener("change", (e) => this.handleFilterChange(e));
+    });
   }
 
   async loadAnalysis() {
     this.showLoadingState();
 
-    // Cleanup previous chart
+    // Cleanup previous charts
     if (this.mutationsChart) {
       this.mutationsChart.destroy();
       this.mutationsChart = null;
+    }
+    if (this.trendlineChart) {
+      this.trendlineChart.destroy();
+      this.trendlineChart = null;
     }
 
     try {
@@ -63,6 +83,9 @@ class AnalysisUI {
           "No events data found. Please ensure you have loaded a recording first.",
         );
       }
+
+      // Store all events for filtering
+      this.allEventsData = events;
 
       // Perform analysis
       this.analyzer = new RRWebAnalyzer(events);
@@ -160,6 +183,7 @@ class AnalysisUI {
 
     this.displaySummary();
     this.displayMutationsPerSecondChart();
+    this.displayTrendlineChart();
     this.displayMessageTypeCounts();
     this.displayIncrementalSnapshotCounts();
     this.displayMutationAnalysis();
@@ -228,7 +252,7 @@ Duration: ${timeRange.duration}`;
   }
 
   displayMutationsPerSecondChart() {
-    const mutationsData = this.analysisData.mutationsPerSecond;
+    const mutationsData = this.getFilteredMutationsData();
 
     if (!mutationsData || mutationsData.length === 0) {
       document.getElementById("mutationsChart").style.display = "none";
@@ -243,7 +267,8 @@ Duration: ${timeRange.duration}`;
     }
 
     // Get the start timestamp for relative time calculation
-    const startTimestamp = mutationsData.length > 0 ? mutationsData[0].timestamp : 0;
+    const startTimestamp =
+      mutationsData.length > 0 ? mutationsData[0].timestamp : 0;
 
     const labels = mutationsData.map((item) => {
       if (this.showAbsoluteTime) {
@@ -318,7 +343,9 @@ Duration: ${timeRange.duration}`;
           x: {
             title: {
               display: true,
-              text: this.showAbsoluteTime ? "Absolute Time" : "Time Since Start",
+              text: this.showAbsoluteTime
+                ? "Absolute Time"
+                : "Time Since Start",
             },
           },
         },
@@ -540,13 +567,16 @@ Duration: ${timeRange.duration}`;
     if (this.mutationsChart) {
       this.mutationsChart.resetZoom();
     }
+    if (this.trendlineChart) {
+      this.trendlineChart.resetZoom();
+    }
   }
 
   formatDuration(totalSeconds) {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = Math.floor(totalSeconds % 60);
-    
+
     if (hours > 0) {
       // Format: XhYmZs (e.g., "2h15m30s")
       return `${hours}h${minutes}m${seconds}s`;
@@ -561,16 +591,19 @@ Duration: ${timeRange.duration}`;
 
   toggleTimeDisplay() {
     this.showAbsoluteTime = !this.showAbsoluteTime;
-    
+
     // Update button text
     const timeToggleBtn = document.getElementById("timeToggleBtn");
     if (timeToggleBtn) {
-      timeToggleBtn.textContent = this.showAbsoluteTime ? "🕐 Since Start" : "🕐 Absolute Time";
+      timeToggleBtn.textContent = this.showAbsoluteTime
+        ? "🕐 Since Start"
+        : "🕐 Absolute Time";
     }
-    
-    // Redraw the chart with new time format
+
+    // Redraw the charts with new time format
     if (this.analysisData && this.analysisData.mutationsPerSecond) {
       this.displayMutationsPerSecondChart();
+      this.displayTrendlineChart();
     }
   }
 
@@ -629,6 +662,219 @@ Duration: ${timeRange.duration}`;
     });
 
     container.innerHTML = html;
+  }
+
+  // New method to display trendline chart
+  displayTrendlineChart() {
+    const mutationsData = this.getFilteredMutationsData();
+
+    if (!mutationsData || mutationsData.length === 0) {
+      const canvas = document.getElementById("mutationsTrendline");
+      if (canvas) {
+        canvas.style.display = "none";
+      }
+      return;
+    }
+
+    const ctx = document.getElementById("mutationsTrendline").getContext("2d");
+
+    // Destroy existing chart if it exists
+    if (this.trendlineChart) {
+      this.trendlineChart.destroy();
+    }
+
+    // Get the start timestamp for relative time calculation
+    const startTimestamp =
+      mutationsData.length > 0 ? mutationsData[0].timestamp : 0;
+
+    const labels = mutationsData.map((item) => {
+      if (this.showAbsoluteTime) {
+        const date = new Date(item.timestamp);
+        return date.toLocaleTimeString();
+      } else {
+        const secondsSinceStart = (item.timestamp - startTimestamp) / 1000;
+        return this.formatDuration(secondsSinceStart);
+      }
+    });
+
+    const data = mutationsData.map((item) => item.total);
+
+    this.trendlineChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Mutation Trend",
+            data: data,
+            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 99, 132, 0.1)",
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 1,
+            pointHoverRadius: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: "Mutation Trendline",
+          },
+          legend: {
+            display: false,
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: "x",
+            },
+            zoom: {
+              mode: "x",
+              wheel: {
+                enabled: true,
+                speed: 0.1,
+              },
+              pinch: {
+                enabled: true,
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: false,
+            },
+          },
+          x: {
+            title: {
+              display: false,
+            },
+          },
+        },
+        interaction: {
+          mode: "index",
+          intersect: false,
+        },
+      },
+    });
+  }
+
+  // New method to handle filter changes
+  handleFilterChange(event) {
+    const filterValue = event.target.value;
+    if (event.target.checked) {
+      this.activeFilters.add(filterValue);
+    } else {
+      this.activeFilters.delete(filterValue);
+    }
+
+    // Redraw charts with filtered data
+    this.displayMutationsPerSecondChart();
+    this.displayTrendlineChart();
+  }
+
+  // New method to get filtered mutations data
+  getFilteredMutationsData() {
+    if (!this.allEventsData || !this.activeFilters.size) {
+      return this.analysisData?.mutationsPerSecond || [];
+    }
+
+    // Map filter values to source numbers
+    const sourceMap = {
+      Mutation: 0,
+      MouseMove: 1,
+      MouseInteraction: 2,
+      Scroll: 3,
+      ViewportResize: 4,
+      Input: 5,
+      TouchMove: 6,
+      MediaInteraction: 7,
+      StyleSheetRule: 8,
+      CanvasMutation: 9,
+      Font: 10,
+      Log: 11,
+      Drag: 12,
+      StyleDeclaration: 13,
+      Selection: 14,
+      AdoptedStyleSheet: 15,
+    };
+
+    const activeSources = new Set();
+    this.activeFilters.forEach((filter) => {
+      if (sourceMap.hasOwnProperty(filter)) {
+        activeSources.add(sourceMap[filter]);
+      }
+    });
+
+    // Recalculate mutations per second with filtered events
+    const mutationsPerSecond = new Map();
+
+    for (const event of this.allEventsData) {
+      if (
+        event.type === 3 &&
+        event.data?.source !== undefined &&
+        event.timestamp
+      ) {
+        // Check if this source is active
+        if (!activeSources.has(event.data.source)) {
+          continue;
+        }
+
+        // Round timestamp to seconds
+        const second = Math.floor(event.timestamp / 1000) * 1000;
+
+        if (!mutationsPerSecond.has(second)) {
+          mutationsPerSecond.set(second, {
+            adds: 0,
+            removes: 0,
+            texts: 0,
+            attributes: 0,
+            total: 0,
+          });
+        }
+
+        const secondData = mutationsPerSecond.get(second);
+        const data = event.data;
+
+        // Only count mutations for Mutation source
+        if (event.data.source === 0) {
+          if (data.adds) {
+            secondData.adds += data.adds.length;
+            secondData.total += data.adds.length;
+          }
+          if (data.removes) {
+            secondData.removes += data.removes.length;
+            secondData.total += data.removes.length;
+          }
+          if (data.texts) {
+            secondData.texts += data.texts.length;
+            secondData.total += data.texts.length;
+          }
+          if (data.attributes) {
+            secondData.attributes += data.attributes.length;
+            secondData.total += data.attributes.length;
+          }
+        } else {
+          // For other sources, just count the event
+          secondData.total += 1;
+        }
+      }
+    }
+
+    // Convert to array and sort by timestamp
+    return Array.from(mutationsPerSecond.entries())
+      .map(([timestamp, data]) => ({
+        timestamp,
+        ...data,
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
   }
 }
 
